@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+	<head>
+		<script src="http://d3js.org/d3.v3.min.js">  </script>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+	</head>
+
+	<body>
+		<script>
+			
+			var color = d3.scale.category10();
+			var margin = 100;
+			var width = 960,height = 500;	
+			
+			var svg = d3.select("body")
+				.append("svg")
+				.attr("width",width + margin)
+				.attr("height",height + margin)
+				.append("g")
+				.attr("class","map");
+				
+			var projection = d3.geo.mercator().scale(130).translate([width/2,height/1.1]);
+				
+			var path = d3.geo.path().projection(projection);	
+				
+			d3.json("geo.json", function(mdata) {
+			
+				var map = svg.selectAll("path")
+					.data(mdata.features)
+					.enter()
+					.append("path")
+					.attr("d", path)
+					.attr("fill", "steelblue")
+			
+				d3.csv("locations.csv", function(data){
+				
+					var div = d3.select("body").append("div")
+						.attr("class", "toolpit")
+						.style("position", "absolute")        
+						.style("text-align", "center")         
+						.style("width", "200px")                  
+						.style("height", "130px")               
+						.style("padding", "2px")
+						.style("font-size", "17px")
+						.style("font-family", 'Open Sans')        
+						.style("background", "lightsteelblue")  
+						.style("border", "0px")   
+						.style("border-radius", "8px")          
+						.style("pointer-events", "none")
+						.style("opacity", 0);
+					
+					var bubble = svg.selectAll(".bubble")
+						.data(data)
+						.enter()
+						.append("g")
+						.attr("class", "bubble")
+						
+					bubble.append("circle")
+						//.attr('cx',function(d){return d.longitude})
+						//.attr('cy',function(d){return d.latitude})
+						.attr('r',4)
+						.attr("transform", function(d) { return "translate(" + projection([ d.longitude, d.latitude ]) + ")"; })
+						.attr('fill','#F26247')
+						.on("mouseover", function(d) {
+						
+							div.transition()
+								.duration(200)
+								.style("opacity", .9);
+							
+							/*div.append("text")
+								.attr("x", function(d) {return d3.event.pageX +;} )
+								.attr("y", function(d) {return d3.event.pageY - 28})
+								.text(function(d) {return d.text;});*/
+								
+							div .html(d.text)  
+									.style("left", (d3.event.pageX + 20) + "px")     
+									.style("top", (d3.event.pageY - 28) + "px");  
+						}) 
+						
+						.on("mouseout", function(d) {       
+							div.transition()        
+								.duration(500)      
+								.style("opacity", 0);   
+						});	
+
+				} )
+
+			} )	
+				
+			var zoom = d3.behavior.zoom()
+				.on("zoom",function() {
+					svg.attr("transform","translate("+ 
+					d3.event.translate.join(",")+")scale("+d3.event.scale+")");
+					svg.selectAll("path")  
+					.attr("d", path.projection(projection)); 
+				});
+
+			svg.call(zoom)	
+		</script>
+	</body>
+</html>
