@@ -1,2 +1,0 @@
-# Trendyzer
-GP

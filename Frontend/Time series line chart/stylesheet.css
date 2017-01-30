@@ -1,0 +1,13 @@
+.axis--x path {
+/*  display: none;*/
+}
+
+.axis--y path {
+    
+}
+
+.line {
+  fill: none;
+  stroke: #ed61ff;
+  stroke-width: 1.5px;
+}

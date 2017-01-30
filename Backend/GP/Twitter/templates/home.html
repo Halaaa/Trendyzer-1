@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+
+   <form class="navbar-form navbar-left" role="search" action="/search/" method="get">
+      {% csrf_token %}
+       <div class="form-group">
+           <input type="text" class="form-control" name="search" placeholder="Search">
+       </div>
+
+       <button type="submit" class="btn btn-defult">Search</button>
+   </form>
+
+
+</body>
+
+</html>
