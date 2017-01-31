@@ -12,7 +12,7 @@
 			var color = d3.scale.category10();
 			var margin = 100;
 			var width = 960,height = 500;	
-			
+			var centered;
 			var svg = d3.select("body")
 				.append("svg")
 				.attr("width",width + margin)
@@ -32,15 +32,16 @@
 					.append("path")
 					.attr("d", path)
 					.attr("fill", "steelblue")
+					.on("click", clicked)
 			
-				d3.csv("locations.csv", function(data){
+				d3.csv("TweetLocation.csv", function(data){
 				
 					var div = d3.select("body").append("div")
 						.attr("class", "toolpit")
 						.style("position", "absolute")        
 						.style("text-align", "center")         
-						.style("width", "200px")                  
-						.style("height", "130px")               
+						.style("width", "215px")                  
+						.style("height", "180px")               
 						.style("padding", "2px")
 						.style("font-size", "17px")
 						.style("font-family", 'Open Sans')        
@@ -73,7 +74,7 @@
 								.attr("y", function(d) {return d3.event.pageY - 28})
 								.text(function(d) {return d.text;});*/
 								
-							div .html(d.text)  
+							div .html(d.screenName + "<br/>" + "-----------------" + "<br/>" + d.text)  
 									.style("left", (d3.event.pageX + 20) + "px")     
 									.style("top", (d3.event.pageY - 28) + "px");  
 						}) 
@@ -87,8 +88,35 @@
 				} )
 
 			} )	
-				
-			var zoom = d3.behavior.zoom()
+			
+			function clicked(d) {
+				  var x, y, k;
+
+				  if (d && centered !== d) {
+					var centroid = path.centroid(d);
+					x = centroid[0];
+					y = centroid[1];
+					k = 4;
+					centered = d;
+				  } else {
+					x = width / 2;
+					y = height / 2;
+					k = 1;
+					centered = null;
+				  }
+
+				  svg.selectAll("path")
+					  .classed("active", centered && function(d) { return d === centered; });
+
+				  svg.transition()
+					  .duration(750)
+					  .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
+					  .style("stroke-width", 1.5 / k + "px");
+			}
+			
+			
+			
+			/*var zoom = d3.behavior.zoom()
 				.on("zoom",function() {
 					svg.attr("transform","translate("+ 
 					d3.event.translate.join(",")+")scale("+d3.event.scale+")");
@@ -96,7 +124,7 @@
 					.attr("d", path.projection(projection)); 
 				});
 
-			svg.call(zoom)	
+			svg.call(zoom)	*/
 		</script>
 	</body>
 </html>
