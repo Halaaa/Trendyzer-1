@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="TRENDYZER is a web application that performs time-series analysis on twitter datasets to detect data trends through a statistical data model (ARIMA) to extract insights and sentiments to help in the decision making process.">
+
+    <!-- Layout -->
+<!--    <link rel="stylesheet" type="text/css" href="styles/style.css">-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="styles/timeseries.css">
+    <script src="d3.js/d3.min.js"></script>
+
+      
+    
+    <title>TRENDYZER|VALIDATION</title>
+  </head>
+
+  <body>
+    <header>
+        
+        <div class="container">
+            <div class="row ">
+                <img class="logo col-sm-5" alt="logo" src="imgs/logo.png">
+<!--                <h4 class="slogan">Trends detector and analyzer.</h4>-->
+                <div class="btns">
+                    <div class="col-sm-1"><a href="analyze.html" class="btn btn-primary" role="button">Analyze</a></div>
+                    <div class="col-sm-2"><a href="index.html" class="btn btn-default" role="button">Back</a></div>
+                </div>
+            </div>
+            
+            
+            
+            
+            
+        </div>
+        
+        
+        
+
+    </header>
+      <div class="container">
+          <svg width="960" height="500"></svg>
+            <script>
+
+            var svg = d3.select("svg"),
+                margin = {top: 20, right: 20, bottom: 30, left: 50},
+                width = +svg.attr("width") - margin.left - margin.right,
+                height = +svg.attr("height") - margin.top - margin.bottom,
+                g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            var parseTime = d3.timeParse("%m/%d/%Y %H:%m");
+    //        var parseTime = d3.timeParse("%x %X %p");
+
+            var x = d3.scaleTime()
+                .rangeRound([0, width]);
+
+            var y = d3.scaleLinear()
+                .rangeRound([height, 0]);
+
+            var line = d3.line()
+                .x(function(d) { return x(d.date); })
+                .y(function(d) { return y(d.frequancy); });
+
+            d3.csv("timeseries.csv", function(d) {
+              d.date = parseTime(d.date);
+              d.frequancy = +d.frequancy;
+              return d;
+            }, function(error, data) {
+              if (error) throw error;
+
+              x.domain(d3.extent(data, function(d) { return d.date; }));
+              y.domain(d3.extent(data, function(d) { return d.frequancy; }));
+
+              g.append("g")
+                  .attr("class", "axis axis--x")
+                  .attr("transform", "translate(0," + height + ")")
+                  .call(d3.axisBottom(x));
+
+              g.append("g")
+                  .attr("class", "axis axis--y")
+                  .call(d3.axisLeft(y))
+                .append("text")
+                  .attr("fill", "#000")
+                  .attr("transform", "rotate(-90)")
+                  .attr("y", 6)
+                  .attr("dy", "0.71em")
+                  .style("text-anchor", "end")
+                  .text("Frequancy");
+
+              g.append("path")
+                  .datum(data)
+                  .attr("class", "line")
+                  .attr("d", line);
+            });
+
+            </script>
+      
+      </div>
+      
+
+       
+      
+    
+    <script src="js/jquery-1.12.0.min.js"></script>
+    <script src="js/script.js"></script>
+  </body>
+</html>
